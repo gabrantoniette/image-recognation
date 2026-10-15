@@ -3,7 +3,31 @@
     "./eslint/eslint-defaults.json",
     "./eslint/eslint-babel.json"
   ],
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "env" : {
     "browser": true
-  }
+  },
+  "overrides": [
+    {
+      "files": ["machine-learning/**/*.js"],
+      "rules": {
+        "no-console": 0
+      }
+    },
+    {
+      "files": ["machine-learning/worker.js"],
+      "env": {
+        "browser": false,
+        "worker": true
+      },
+      "parserOptions": {
+        "sourceType": "script"
+      },
+      "globals": {
+        "tf": false
+      }
+    }
+  ]
 }

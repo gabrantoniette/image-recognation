@@ -1,26 +1,26 @@
-# Política de Segurança
+# Security Policy
 
-## Versões suportadas
+## Supported versions
 
-Apenas a branch `main` recebe correções de segurança.
+Only the `main` branch receives security fixes.
 
-## Como reportar uma vulnerabilidade
+## Reporting a vulnerability
 
-**Não abra uma issue pública para reportar vulnerabilidades.**
+**Please do not open a public issue to report a vulnerability.**
 
-Use o reporte privado do GitHub:
+Use GitHub's private reporting instead:
 [Security → Report a vulnerability](https://github.com/gabrantoniette/image-recognation/security/advisories/new).
 
-Inclua, se possível:
+If possible, include:
 
-- descrição do problema e impacto;
-- passos para reproduzir (navegador, versão, URL/arquivo afetado);
-- sugestão de correção, se houver.
+- a description of the issue and its impact;
+- steps to reproduce (browser, version, affected URL/file);
+- a suggested fix, if you have one.
 
-Você deve receber uma resposta inicial em até 7 dias.
+You should get an initial response within 7 days.
 
-## Escopo
+## Scope
 
-Este é um projeto estático que roda inteiramente no navegador (sem backend).
-O modelo YOLOv5n e o TensorFlow.js são executados localmente em um Web Worker;
-nenhuma imagem ou dado do usuário é enviado para servidores.
+This is a static project that runs entirely in the browser (no backend).
+The YOLOv5n model and TensorFlow.js run locally in a Web Worker;
+no images or user data are sent to any server.

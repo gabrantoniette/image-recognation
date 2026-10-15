@@ -1,40 +1,53 @@
-import { buildLayout } from "./layout";
+import { buildLayout } from './layout';
+
+const CAPTURE_INTERVAL_MS = 200;
 
 export default async function main(game) {
-    const container = buildLayout(game.app);
-    const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+  const container = buildLayout(game.app);
+  // Classic worker (no `type: 'module'`): worker.js relies on importScripts
+  const worker = new Worker(new URL('./worker.js', import.meta.url));
 
-    game.stage.aim.visible = false;
+  game.stage.aim.visible = false;
 
-    worker.onmessage = ({ data }) => {
-        const { type, x, y } = data;
+  function startCapture() {
+    setInterval(async() => {
+      const canvas = game.app.renderer.extract.canvas(game.stage);
+      const bitmap = await createImageBitmap(canvas);
 
-        if (type === 'prediction') {
-            console.log(`🎯 AI predicted at: (${x}, ${y})`);
-            container.updateHUD(data);
-            game.stage.aim.visible = true;
+      worker.postMessage({
+        type: 'predict',
+        image: bitmap,
+      }, [bitmap]);
+    }, CAPTURE_INTERVAL_MS);
+  }
 
-            game.stage.aim.setPosition(data.x, data.y);
-            const position = game.stage.aim.getGlobalPosition();
+  worker.onmessage = ({ data }) => {
+    const { type, x, y } = data;
 
-            game.handleClick({
-                global: position,
-            });
+    if (type === 'model-loaded') {
+      console.log('✅ YOLOv5n model loaded');
+      startCapture();
+      return;
+    }
 
-        }
+    if (type === 'model-error') {
+      console.error(`❌ Could not load the model: ${data.message}`);
+      return;
+    }
 
-    };
+    if (type === 'prediction') {
+      console.log(`🎯 AI predicted at: (${x}, ${y})`);
+      container.updateHUD(data);
+      game.stage.aim.visible = true;
 
-    setInterval(async () => {
-        const canvas = game.app.renderer.extract.canvas(game.stage);
-        const bitmap = await createImageBitmap(canvas);
+      game.stage.aim.setPosition(x, y);
+      const position = game.stage.aim.getGlobalPosition();
 
-        worker.postMessage({
-            type: 'predict',
-            image: bitmap,
-        }, [bitmap]);
+      game.handleClick({
+        global: position,
+      });
+    }
+  };
 
-    }, 200); // every 200ms
-
-    return container;
+  return container;
 }
